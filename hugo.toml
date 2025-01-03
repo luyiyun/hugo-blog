@@ -1,6 +1,6 @@
 baseURL = 'https://example.org/'
-languageCode = 'en-us'
-title = 'My New Hugo Site'
+languageCode = 'zh-cn'
+title = "Rong's wiki"
 theme = 'FixIt'
 defaultContentLanguage = 'zh-cn'
 
@@ -10,3 +10,7 @@ defaultContentLanguage = 'zh-cn'
   _merge = "shallow"
 [taxonomies]
   _merge = "shallow"
+
+[params.math]
+  enable = true
+  copyTex = true

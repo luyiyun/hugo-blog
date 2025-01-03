@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html itemscope itemtype="http://schema.org/WebPage" lang="zh-cn">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+    <meta name="robots" content="noodp" />
+    <title>贝叶斯Logistic回归 - Rong&#39;s wiki</title><meta name="author" content="rongzhiwei">
+<meta name="description" content="1 Binary Logistic Regression Model极大后验估计设$X$是$n\times p$的design matrix，包含$p$个features和$n$个samples。$y$是长度为$n$的label向量，值为$0$和$1$。假设$w$是长度为$p$的参数向量，则整个模型可以表示为：
+"><meta name="keywords" content='statistics, bayes, mcmc'>
+  <meta itemprop="name" content="贝叶斯Logistic回归">
+  <meta itemprop="description" content="1 Binary Logistic Regression Model极大后验估计设$X$是$n\times p$的design matrix，包含$p$个features和$n$个samples。$y$是长度为$n$的label向量，值为$0$和$1$。假设$w$是长度为$p$的参数向量，则整个模型可以表示为：">
+  <meta itemprop="datePublished" content="2024-02-21T00:00:00+00:00">
+  <meta itemprop="dateModified" content="2025-01-03T00:00:00+00:00">
+  <meta itemprop="wordCount" content="136">
+  <meta itemprop="keywords" content="Statistics,Bayes,Mcmc"><meta property="og:url" content="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/">
+  <meta property="og:site_name" content="Rong&#39;s wiki">
+  <meta property="og:title" content="贝叶斯Logistic回归">
+  <meta property="og:description" content="1 Binary Logistic Regression Model极大后验估计设$X$是$n\times p$的design matrix，包含$p$个features和$n$个samples。$y$是长度为$n$的label向量，值为$0$和$1$。假设$w$是长度为$p$的参数向量，则整个模型可以表示为：">
+  <meta property="og:locale" content="zh_cn">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-02-21T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-01-03T00:00:00+00:00">
+    <meta property="article:tag" content="Statistics">
+    <meta property="article:tag" content="Bayes">
+    <meta property="article:tag" content="Mcmc">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="贝叶斯Logistic回归">
+  <meta name="twitter:description" content="1 Binary Logistic Regression Model极大后验估计设$X$是$n\times p$的design matrix，包含$p$个features和$n$个samples。$y$是长度为$n$的label向量，值为$0$和$1$。假设$w$是长度为$p$的参数向量，则整个模型可以表示为：">
+<meta name="application-name" content="FixIt">
+<meta name="apple-mobile-web-app-title" content="FixIt"><meta name="theme-color" data-light="#f8f8f8" data-dark="#252627" content="#f8f8f8"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="canonical" type="text/html" href="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/" title="贝叶斯Logistic回归 - Rong&#39;s wiki" /><link rel="next" type="text/html" href="http://localhost:1313/posts/%E7%94%9F%E6%B4%BB/%E6%B0%B4%E7%85%AE%E8%82%89%E7%89%87/" title="水煮肉片" /><link rel="alternate" type="text/markdown" href="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/index.md" title="贝叶斯Logistic回归 - Rong's wiki"><link rel="stylesheet" href="/css/style.min.css"><link rel="preload" href="/lib/fontawesome-free/all.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"></noscript><link rel="preload" href="/lib/animate/animate.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/animate/animate.min.css"></noscript><script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "BlogPosting",
+    "headline": "贝叶斯Logistic回归",
+    "inLanguage": "zh-cn",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "http:\/\/localhost:1313\/posts\/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0\/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92\/"
+    },"genre": "posts","keywords": "statistics, bayes, mcmc","wordcount":  136 ,
+    "url": "http:\/\/localhost:1313\/posts\/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0\/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92\/","datePublished": "2024-02-21T00:00:00+00:00","dateModified": "2025-01-03T00:00:00+00:00","publisher": {
+      "@type": "Organization",
+      "name": ""},"author": {
+        "@type": "Person",
+        "name": "rongzhiwei"
+      },"description": ""
+  }
+  </script><script src="/js/head/color-scheme.min.js"></script></head>
+  <body data-header-desktop="sticky" data-header-mobile="auto"><div class="wrapper" data-page-style="normal"><header class="desktop animate__faster" id="header-desktop">
+  <div class="header-wrapper">
+    <div class="header-title">
+      <a href="/" title="Rong&#39;s wiki"><span class="header-title-text">Rong&#39;s wiki</span></a><span class="header-subtitle"></span></div>
+    <nav>
+      <ul class="menu"><li class="menu-item">
+              <a class="menu-link" href="/archives/"><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> Archives</a></li><li class="menu-item">
+              <a class="menu-link" href="/categories/"><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> Categories</a></li><li class="menu-item">
+              <a class="menu-link" href="/tags/"><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> Tags</a></li><li class="menu-item delimiter"></li><li class="menu-item theme-switch" title="切换主题">
+          <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+        </li></ul>
+    </nav>
+  </div>
+</header><header class="mobile animate__faster" id="header-mobile">
+  <div class="header-container">
+    <div class="header-wrapper">
+      <div class="header-title">
+        <a href="/" title="Rong&#39;s wiki"><span class="header-title-text">Rong&#39;s wiki</span></a><span class="header-subtitle"></span></div>
+      <div class="menu-toggle" id="menu-toggle-mobile">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <nav>
+      <ul class="menu" id="menu-mobile"><li class="menu-item"><a class="menu-link" href="/archives/"><i class="fa-solid fa-archive fa-fw fa-sm" aria-hidden="true"></i> Archives</a></li><li class="menu-item"><a class="menu-link" href="/categories/"><i class="fa-solid fa-folder-tree fa-fw fa-sm" aria-hidden="true"></i> Categories</a></li><li class="menu-item"><a class="menu-link" href="/tags/"><i class="fa-solid fa-tags fa-fw fa-sm" aria-hidden="true"></i> Tags</a></li><li class="menu-item menu-system">
+          <span class="menu-system-item theme-switch" title="切换主题"><i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i></span></li>
+      </ul>
+    </nav>
+  </div>
+</header><main class="container"><aside class="aside-collection animate__animated animate__fadeIn animate__faster" aria-label="合集"></aside>
+
+  <article class="page single">
+    <div class="header"><h1 class="single-title animate__animated animate__flipInX"><span>贝叶斯Logistic回归</span>
+      </h1></div><div class="post-meta">
+      <div class="post-meta-line"><span class="post-author"><a href="https://rongzhiwei.github.io/" title="作者"target="_blank" rel="external nofollow noopener noreferrer author" class="author"><i class="fa-solid fa-user-circle" aria-hidden="true"></i>
+    rongzhiwei</a></span></div><div class="post-meta-line"><span title="发布于 2024-02-21 00:00:00"><i class="fa-solid fa-calendar-days fa-fw me-1" aria-hidden="true"></i><time datetime="2024-02-21">2024-02-21</time></span>&nbsp;<span title="更新于 2025-01-03 00:00:00"><i class="fa-regular fa-calendar-check fa-fw me-1" aria-hidden="true"></i><time datetime="2025-01-03">2025-01-03</time></span>&nbsp;<span title="136 字"><i class="fa-solid fa-pencil-alt fa-fw me-1" aria-hidden="true"></i>约 200 字</span>&nbsp;<span><i class="fa-regular fa-clock fa-fw me-1" aria-hidden="true"></i>预计阅读 1 分钟</span>&nbsp;</div>
+    </div><div class="details toc" id="toc-static" data-kept="false">
+        <div class="details-summary toc-title">
+          <span>目录</span>
+          <span><i class="details-icon fa-solid fa-angle-right" aria-hidden="true"></i></span>
+        </div>
+        <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#极大后验估计">极大后验估计</a></li>
+    <li><a href="#后验期望估计">后验期望估计</a></li>
+    <li><a href="#后验分布估计">后验分布估计</a>
+      <ul>
+        <li><a href="#gibbs-sampling">Gibbs Sampling</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+      </div><div class="content" id="content"><h2 id="1-binary-logistic-regression-model" class="heading-element"><span>1 Binary Logistic Regression Model</span>
+  <a href="#1-binary-logistic-regression-model" class="heading-mark">
+    <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>
+  </a>
+</h2><h2 id="极大后验估计" class="heading-element"><span>极大后验估计</span>
+  <a href="#%e6%9e%81%e5%a4%a7%e5%90%8e%e9%aa%8c%e4%bc%b0%e8%ae%a1" class="heading-mark">
+    <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>
+  </a>
+</h2><p>设$X$是$n\times p$的design matrix，包含$p$个features和$n$个samples。$y$是长度为$n$的label向量，值为$0$和$1$。假设$w$是长度为$p$的参数向量，则整个模型可以表示为：</p>
+<div class="fi-row">
+$$  
+P(y_i=1|x_i,w)=\sigma(w^Tx_i)=\frac{1}{1+\exp(-w^Tx_i)}  
+$$
+</div>
+<p>假设$w$的先验分布为：</p>
+<p><div class="fi-row">
+$$  
+w_i\sim\mathcal{N}(0,v)  
+$$
+</div>
+则我们可以通过最小化下面的目标函数来得到$w$的MAP估计：</p>
+<p><div class="fi-row">
+$$  
+L=-\sum_{i=1}^n{[y_i\log(\sigma(w^Tx_i))+(1-y_i)\log(1-\sigma(w^Tx_i))]}+\frac{1}{2v}w^Tw  
+$$
+</div>
+注意，如果我们将$y$修改为$+1$和$-1$（分别对应$1$和$0$，使用$\tilde{y}$表示），则以上的目标函数可以改写为下面的形式：</p>
+<p><div class="fi-row">
+$$  
+L=\sum_{i=1}^n{\log(1+\exp(-\tilde{y}_iw^Tx_i))}+\frac{1}{2v}w^Tw  
+$$
+</div>
+这需要用到sigmoid函数的重要性质：</p>
+<div class="details admonition importance open disabled">
+  <div class="details-summary admonition-title"><i class="icon fa-fw fa-solid fa-pencil-alt" aria-hidden="true"></i>sigmoid的性质</div>
+  <div class="details-content">
+    <div class="admonition-content"><div class="fi-row">
+$$1-\sigma(z)=\sigma(-z)$$
+</div></div>
+  </div>
+</div><p>当$v\to\infty$，上述MAP估计退化到MLE估计。</p>
+<p>优化上述目标函数一般使用牛顿法，即： ^61e53c</p>
+<ol>
+<li>首先求出目标函数的gradient和Hessian：</li>
+</ol>
+<p><div class="fi-row">
+$$  
+    \begin{align}
+    g&=-\sum_{i=1}^n{(1-\sigma(\tilde{y}_iw^Tx_i))\tilde{y}_ix_i}+\frac{w}{v} \\
+    &=\sum_{i=1}^n{(\sigma(w^Tx_i)-y_i)x_i}+\frac{w}{v}\\
+    H&=\sum_{i=1}^n{\sigma(y_iw^Tx_i)(1-\sigma(y_iw^Tx_i))x_ix_i^T}+\frac{1}{v}I_p \\
+    &=\sum_{i=1}^n{\sigma(w^Tx_i)(1-\sigma(w^Tx_i))x_ix_i^T}+\frac{1}{v}I_p \end{align}  
+    $$ ^637fb6
+</div>
+2. 进行如下迭代计算直到梯度接近0：</p>
+<p><div class="fi-row">
+$$  
+    w^{t+1}=w-\alpha H^{-1}g  
+    $$
+</div>
+其中$\alpha$是步长，可以设置为$1$，但是最好通过line search methods来找到sufficient descent conditions。
+3. 注意到，Hessian是negative-definite，因此目标函数是concave，一定能够得到global minimizer。</p>
+<h2 id="后验期望估计" class="heading-element"><span>后验期望估计</span>
+  <a href="#%e5%90%8e%e9%aa%8c%e6%9c%9f%e6%9c%9b%e4%bc%b0%e8%ae%a1" class="heading-mark">
+    <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>
+  </a>
+</h2><p>有两种做法：</p>
+<ul>
+<li>通过[[重要性采样#示例：贝叶斯Logistic回归|重要性采样]]的方式。</li>
+<li>使用后面提及的MCMC进行采样，然后计算均值。</li>
+</ul>
+<h2 id="后验分布估计" class="heading-element"><span>后验分布估计</span>
+  <a href="#%e5%90%8e%e9%aa%8c%e5%88%86%e5%b8%83%e4%bc%b0%e8%ae%a1" class="heading-mark">
+    <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>
+  </a>
+</h2><p>基于牛顿法只能得到点估计，如果能够对后验分布进行估计，则还能得到更多的信息。</p>
+<h3 id="gibbs-sampling" class="heading-element"><span>Gibbs Sampling</span>
+  <a href="#gibbs-sampling" class="heading-mark">
+    <svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg>
+  </a>
+</h3><p>首先我们考虑使用Gibbs抽样，其是通过添加auxiliary variables来实现Gibbs抽样。相似的思想也可以应用到贝叶斯Probit回归上，并且更加直观，请先了解[[贝叶斯Probit回归|贝叶斯Probit回归的auxiliary gibbs sampling]]。</p>
+<p>基于贝叶斯Probit回归的思想，在logistic regression上的一个最直接的想法就是使用logistic distribution来替换standard normal distribution，即：</p>
+<div class="fi-row">
+$$  
+\epsilon_i\sim \text{Logistic}(0, 1)  
+$$
+</div>
+<div class="alert alert-note"><p class="alert-title"><svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16"><path d="M0 8a8 8 0 1116 0A8 8 0 010 8zm8-6.5a6.5 6.5.0 100 13 6.5 6.5.0 000-13zM6.5 7.75A.75.75.0 017.25 7h1a.75.75.0 01.75.75v2.75h.25a.75.75.0 010 1.5h-2a.75.75.0 010-1.5h.25v-2h-.25a.75.75.0 01-.75-.75zM8 6a1 1 0 110-2 1 1 0 010 2z"/></svg>注意</p><p>title: $\text{Logistic}$的密度函数和分布函数
+collapse: closed</p>
+<p>其分布函数为就是sigmoid函数，
+<div class="fi-row">
+$$L(x)=\frac{1}{1+exp(-x)}$$
+</div>
+其密度函数是其导数，
+<div class="fi-row">
+$$f(x)=L(x)(1-L(x))=\frac{\exp(-x)}{(1+\exp(-x))^2}$$
+</div></p></div><p>利用相同的推导思路，我们可以得到下面的Gibbs抽样过程：</p>
+<div class="details admonition danger open disabled">
+  <div class="details-summary admonition-title"><i class="icon fa-fw fa-solid fa-bolt" aria-hidden="true"></i>危险</div>
+  <div class="details-content">
+    <div class="admonition-content"><p>title: Logistic模型的Gibbs采样过程（错误）</p>
+<p><div class="fi-row">
+$$  
+\begin{align}
+z_i|w,y,x_i&\sim \left\{\begin{matrix}
+	\text{Logistic}(w^Tx_i,1)I(z_i>0) & \text{if}\ y_i=1 \\
+	\text{Logistic}(w^Tx_i,1)I(z_i\le0) & \text{if}\ y_i=0
+	\end{matrix}\right. \\
+w|y,X,z&\propto \text{Logistic}(Xw, I_n)\mathcal{N}(0, v)
+\end{align}
+$$
+</div>
+对$w$进行采样时，我们需要求解一个后验，其先验是Normal，似然是Logistic。这个后验无法显式地写出来，所以其实无法很容易地进行采样。</p>
+<p>我之前推导出现了错误，在采样$w|y,X,z$的时候，依然使用正态分布采样，得到下面的结果(预热10000，取样10000)：
+![[image_CI7NX_ZFz9.png|logistic模型的gibbs采样(横线表示真实值)]]</p></div>
+  </div>
+</div><p>文献[^2]中介绍了另外一种基于auxiliary variables的gibbs采样，需要利用到Kolmogorov-Smirnov distribution（简记为KS distribution）。</p>
+<p>KS distribution是下面的random variable所服从的分布</p>
+<p><div class="fi-row">
+$$
+K=\sup_{t\in[0,1]}|B(t)|
+$$
+</div>
+其中$B(t)$是<a href="https://en.wikipedia.org/wiki/Brownian_bridge"target="_blank" rel="external nofollow noopener noreferrer">Brownian bridge</a>。
+![[Pasted image 20240221222611.png|KS distribution的概率密度函数]]
+$K$的累计分布函数可以表示为</p>
+<div class="fi-row">
+$$
+P(K\le x)=1-2\sum_{k=1}^{\infty}{(-1)^{k-1}\exp(-2k^2x^2)}=\frac{\sqrt{2\pi}}{x}\sum_{k=1}^{\infty}{\exp(\frac{-(2k-1)^2)\pi^2}{8x^2})}
+$$
+</div>
+</div><div class="post-footer" id="post-footer">
+  <div class="post-info">
+    <div class="post-info-line">
+      <div class="post-info-mod">
+        <span title="更新于 2025-01-03 00:00:00">更新于 2025-01-03&nbsp;</span>
+      </div><div class="post-info-license">
+            <span><a rel="license external nofollow noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a></span>
+          </div></div><div class="post-info-line">
+        <div class="post-info-md"><span><a href="/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/index.md" title="阅读原始文档" class="link-to-markdown">阅读原始文档</a></span></div>
+        <div class="post-info-share">
+          <span><a href="javascript:void(0);" title="分享到 X" data-sharer="twitter" data-url="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/" data-title="贝叶斯Logistic回归" data-hashtags="statistics,bayes,mcmc"><i class="fa-brands fa-x-twitter fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/" data-hashtag="statistics"><i class="fa-brands fa-facebook-square fa-fw" aria-hidden="true"></i></a>
+  <a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://localhost:1313/posts/%E4%B8%93%E9%A2%98%E5%AD%A6%E4%B9%A0/%E8%B4%9D%E5%8F%B6%E6%96%AFlogistic%E5%9B%9E%E5%BD%92/" data-title="贝叶斯Logistic回归"><i class="fa-brands fa-weibo fa-fw" aria-hidden="true"></i></a>
+  </span>
+        </div>
+      </div></div>
+
+  <div class="post-info-more">
+    <section class="post-tags"><i class="fa-solid fa-tags fa-fw me-1" aria-hidden="true"></i><a href="/tags/statistics/" class="post-tag" title="标签 - Statistics">Statistics</a><a href="/tags/bayes/" class="post-tag" title="标签 - Bayes">Bayes</a><a href="/tags/mcmc/" class="post-tag" title="标签 - Mcmc">Mcmc</a></section>
+    <section>
+      <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+    </section>
+  </div><div class="post-nav"><a href="/posts/%E7%94%9F%E6%B4%BB/%E6%B0%B4%E7%85%AE%E8%82%89%E7%89%87/" class="post-nav-item" rel="next" title="水煮肉片">水煮肉片<i class="fa-solid fa-angle-right fa-fw" aria-hidden="true"></i></a></div>
+</div>
+</article>
+
+  <aside class="toc" id="toc-auto" aria-label="目录"><h2 class="toc-title">目录&nbsp;<i class="toc-icon fa-solid fa-angle-down fa-fw" aria-hidden="true"></i></h2>
+      <div class="toc-content" id="toc-content-auto"></div></aside></main><footer class="footer">
+    <div class="footer-container"><div class="footer-line powered">由 <a href="https://gohugo.io/" target="_blank" rel="external nofollow noopener noreferrer" title="Hugo 0.140.2"><img class="hugo-icon" src="/images/hugo.min.svg" alt="Hugo logo" /> Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/hugo-fixit/FixIt" target="_blank" rel="external" title="FixIt v0.3.17-30a67c4b"><img class="fixit-icon" src="/images/fixit.min.svg" alt="FixIt logo" /> FixIt</a>
+        </div><div class="footer-line copyright" itemscope itemtype="http://schema.org/CreativeWork"><i class="fa-regular fa-copyright fa-fw" aria-hidden="true"></i>
+            <span itemprop="copyrightYear">2025</span><span class="author" itemprop="copyrightHolder">
+              <a href="/"></a></span></div></div>
+  </footer></div><div class="widgets"><div class="fixed-buttons animate__faster d-none"><div class="fixed-button back-to-top" role="button" aria-label="回到顶部"><i class="fa-solid fa-arrow-up fa-fw" aria-hidden="true"></i><span class="variant-numeric d-none">0%</span>
+        </div></div><div id="mask"></div><noscript>
+    <div class="noscript-warning">该网站在启用 JavaScript 的情况下效果最佳。</div>
+  </noscript>
+</div><link rel="preload" href="/lib/katex/katex.min.css" as="style" onload="this.removeAttribute('onload');this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="/lib/katex/katex.min.css"></noscript><link rel="stylesheet" href="/lib/cookieconsent/cookieconsent.min.css"><script src="/lib/sharer/sharer.min.js" async defer></script><script src="/lib/katex/katex.min.js" defer></script><script src="/lib/katex/auto-render.min.js" defer></script><script src="/lib/katex/mhchem.min.js" defer></script><script src="/lib/cookieconsent/cookieconsent.min.js" defer></script><script>window.config={"code":{"copyTitle":"复制到剪贴板","editLockTitle":"锁定可编辑代码块","editUnLockTitle":"解锁可编辑代码块","editable":true,"maxShownLines":10},"comment":{"enable":false},"cookieconsent":{"content":{"dismiss":"同意","link":"了解更多","message":"本网站使用 Cookies 来改善您的浏览体验。"},"enable":true,"palette":{"button":{"background":"#f0f0f0"},"popup":{"background":"#1aa3ff"}},"theme":"edgeless"},"math":{"delimiters":[{"display":true,"left":"$$","right":"$$"},{"display":true,"left":"\\[","right":"\\]"},{"display":true,"left":"\\begin{equation}","right":"\\end{equation}"},{"display":true,"left":"\\begin{equation*}","right":"\\end{equation*}"},{"display":true,"left":"\\begin{align}","right":"\\end{align}"},{"display":true,"left":"\\begin{align*}","right":"\\end{align*}"},{"display":true,"left":"\\begin{alignat}","right":"\\end{alignat}"},{"display":true,"left":"\\begin{alignat*}","right":"\\end{alignat*}"},{"display":true,"left":"\\begin{gather}","right":"\\end{gather}"},{"display":true,"left":"\\begin{CD}","right":"\\end{CD}"},{"display":false,"left":"$","right":"$"},{"display":false,"left":"\\(","right":"\\)"}],"strict":false},"version":"v0.3.17-30a67c4b"};console.log('Page config:', window.config);</script><script src="/js/theme.min.js" defer></script></body>
+</html>
